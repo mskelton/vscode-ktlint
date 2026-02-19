@@ -1,0 +1,50 @@
+{
+  "name": "ktlint",
+  "displayName": "ktlint",
+  "description": "Format Kotlin files using ktlint",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mskelton/vscode-ktlint"
+  },
+  "license": "ISC",
+  "publisher": "mskelton",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Formatters"
+  ],
+  "activationEvents": [
+    "onLanguage:kotlin"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "kotlin",
+        "extensions": [".kt", ".kts"]
+      }
+    ]
+  },
+  "files": [
+    "out/**/*",
+    "LICENSE"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint .",
+    "fmt": "prettier --write .",
+    "fmt:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@mskelton/eslint-config": "^9.2.0",
+    "@types/node": "^22.15.17",
+    "@types/vscode": "^1.60.0",
+    "eslint": "^9.29.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3"
+  }
+}
