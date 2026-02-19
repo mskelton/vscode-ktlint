@@ -7,7 +7,7 @@ export function activate(context: vscode.ExtensionContext) {
       const text = document.getText()
 
       return new Promise((resolve) => {
-        const proc = spawn('ktlint', ['--stdin', '-F'])
+        const proc = spawn('ktlint', ['--stdin', '-F', '--log-level', 'none', '--stdin-path', document.uri.fsPath])
         let stdout = ''
         let stderr = ''
 
