@@ -1,4 +1,4 @@
-import { execSync } from 'child_process'
+import { spawn } from 'child_process'
 import * as vscode from 'vscode'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -6,31 +6,50 @@ export function activate(context: vscode.ExtensionContext) {
     'kotlin',
     {
       provideDocumentFormattingEdits(
-        document: vscode.TextDocument
-      ): vscode.TextEdit[] {
+        document: vscode.TextDocument,
+      ): Promise<vscode.TextEdit[]> {
         const text = document.getText()
 
-        try {
-          const formatted = execSync('ktlint --stdin -F', {
-            input: text,
-            encoding: 'utf-8',
-            maxBuffer: 10 * 1024 * 1024,
+        return new Promise((resolve) => {
+          const proc = spawn('ktlint', ['--stdin', '-F'])
+          let stdout = ''
+          let stderr = ''
+
+          proc.stdout.on('data', (data: Buffer) => {
+            stdout += data.toString()
           })
 
-          const fullRange = new vscode.Range(
-            document.positionAt(0),
-            document.positionAt(text.length)
-          )
+          proc.stderr.on('data', (data: Buffer) => {
+            stderr += data.toString()
+          })
 
-          return [vscode.TextEdit.replace(fullRange, formatted)]
-        } catch (error) {
-          if (error instanceof Error) {
+          proc.on('close', (code) => {
+            if (code !== 0) {
+              vscode.window.showErrorMessage(
+                `ktlint error: ${stderr || `exit code ${code}`}`,
+              )
+              resolve([])
+              return
+            }
+
+            const fullRange = new vscode.Range(
+              document.positionAt(0),
+              document.positionAt(text.length),
+            )
+
+            resolve([vscode.TextEdit.replace(fullRange, stdout)])
+          })
+
+          proc.on('error', (error) => {
             vscode.window.showErrorMessage(`ktlint error: ${error.message}`)
-          }
-          return []
-        }
+            resolve([])
+          })
+
+          proc.stdin.write(text)
+          proc.stdin.end()
+        })
       },
-    }
+    },
   )
 
   context.subscriptions.push(formatter)
