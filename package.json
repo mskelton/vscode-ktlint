@@ -18,7 +18,7 @@
   ],
   "main": "./out/extension.js",
   "scripts": {
-    "vscode:prepublish": "yarn compile",
+    "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint .",
@@ -49,6 +49,5 @@
   ],
   "engines": {
     "vscode": "^1.60.0"
-  },
-  "packageManager": "yarn@4.12.0"
+  }
 }
